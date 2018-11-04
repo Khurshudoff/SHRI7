@@ -1,55 +1,26 @@
-class Dispatcher {
-    _callbacks: Array<Function>;
-
-    constructor(){
-        this._callbacks = [];
-    }
-
-    dispatch(obj : object){
-        for(let i = 0; i < this._callbacks.length; i++){
-            if(this._callbacks[i](obj)){
-                break;
-            }
-        }
-    }
-
-    register(callback : Function){
-        this._callbacks.push(callback);
-    }
-
-
-}
+import Dispatcher from './dispatcher'
 let AppDispatcher = new Dispatcher();
 
-
-interface myObject extends Object{
-    name: string
-}
-interface ListStore{
+interface Store{
     _events: any,
-    items: Array<myObject>,
+    currentPage: any,
     getAll: Function,
     trigger: Function,
     bind: Function,
     // unbind: Function
 }
-const ListStore: ListStore = {
+const ListStore: Store = {
     _events: {},
-    items: [],
+    currentPage: '',
 
     getAll: function() {
-        return this.items;
+        return this.currentPage;
     },
     bind : function(event : string, fct : Function){
         this._events = this._events || {};
         this._events[event] = this._events[event]	|| [];
         this._events[event].push(fct);
     },
-    // unbind: function(event : string, fct : Function){
-    //     this._events = this._events || {};
-    //     if( event in this._events === false  )	return;
-    //     this._events[event].splice(this._events[event].indexOf(fct), 1);
-    // },
     trigger: function(event : string) {
         this._events = this._events || {};
         if( event in this._events === false  )	return;
@@ -61,48 +32,44 @@ const ListStore: ListStore = {
 
 AppDispatcher.register( function( payload : any ) {
     switch( payload.eventName ) {
-        case 'new-item':
-           // We get to mutate data!
-            ListStore.items.push( payload.newItem );
+        case 'change-page':
+            ListStore.currentPage = payload.page;
             ListStore.trigger && ListStore.trigger( 'change' );
             break;
     }
     return true; // Needed for Flux promise resolution
 });
 
-//function which is called when list changed
-const listChanged = function() {
-    ul = document.querySelector('.ul')
-    const tmp_ul = document.createElement('ul');
-    tmp_ul.classList.add('ul')
+const pageChanged = function(){
+    const currentPage = ListStore.currentPage;
 
-    ListStore.items.forEach(v => {
-        const tmp_li = document.createElement('li');
-        tmp_li.innerHTML = v.name
+    const currentPageNode: HTMLElement | null = document.querySelector('#'+currentPage);
 
-        tmp_ul.appendChild(tmp_li);
+    document.querySelectorAll('.page').forEach(function(page: any){
+        page.style.display = 'none';
     })
 
-    const ulParent = ul && ul.parentNode
-    ulParent && ulParent.appendChild(tmp_ul)
-    ul && ulParent && ulParent.removeChild(ul);
+    currentPageNode!.style.display = 'block';
 }
 
 //function which is subscribing on 'change'
 const componentDidMount = function() {  
-    ListStore.bind( 'change', listChanged );
+    ListStore.bind( 'change', pageChanged );
 }
 
-const button = document.querySelector('.button');
-let ul = document.querySelector('.ul')
+const page1Button = document.querySelector('#page1_button')
+const page2Button = document.querySelector('#page2_button')
 
-const createNewItem = function() {
+const buttonCLick = function(event : any){
+    event.preventDefault();
+
     AppDispatcher.dispatch({
-        eventName: 'new-item',
-        newItem: { name: 'Marco' }
-    })   
+        eventName: 'change-page',
+        page: event.target.value
+    })
 }
 
-componentDidMount()
+componentDidMount();
 
-button && button.addEventListener('click', createNewItem)
+page1Button && page1Button.addEventListener('click', buttonCLick);
+page2Button && page2Button.addEventListener('click', buttonCLick);

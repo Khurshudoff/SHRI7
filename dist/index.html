@@ -3,18 +3,50 @@
 <head>
 	<title>asd</title>
 	<style>
-		.button {
+		button {
 			cursor: pointer;
 			width: 150px;
 			height: 40px;
 		}
+		.nav_item {
+			display: inline-block;
+		}
+		.nav_item button{
+			text-decoration: none;
+			border: 2px solid red;
+			padding: 10px 20px;
+			margin-right: 20px;
+		}
+		.nav_item button:focus {
+			outline: none
+		}
+		#page1 {
+			background-color: rgba(255,0,0,0.5);
+		}
+		#page2 {
+			background-color: rgba(0,0,255,0.5);
+		}
 	</style>
 </head>
 <body>
-	<button class="button">click me</button>
-	<ul class="ul">
-		<li class="li">before</li>
+
+	<ul class="nav">
+		<li class="nav_item">
+			<button value="page1" id="page1_button" href="#">page1</button>
+		</li>
+		<li class="nav_item">
+			<button value="page2" id="page2_button" href="#">page2</button>
+		</li>
 	</ul>
-	<script src="dist/index.js"></script>
+
+	<div class="page" id="page1">
+		<h2>page1</h2>
+	</div>
+	<div class="page" id="page2" style="display: none">
+		<h2>
+			page2
+		</h2>
+	</div>
+	<script src="main.js"></script>
 <script type="text/javascript" src="main.js"></script></body>
 </html>
