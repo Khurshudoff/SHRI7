@@ -31,7 +31,7 @@ interface ListStore{
     getAll: Function,
     trigger: Function,
     bind: Function,
-    unbind: Function
+    // unbind: Function
 }
 const ListStore: ListStore = {
     _events: {},
@@ -45,11 +45,11 @@ const ListStore: ListStore = {
         this._events[event] = this._events[event]	|| [];
         this._events[event].push(fct);
     },
-    unbind: function(event : string, fct : Function){
-        this._events = this._events || {};
-        if( event in this._events === false  )	return;
-        this._events[event].splice(this._events[event].indexOf(fct), 1);
-    },
+    // unbind: function(event : string, fct : Function){
+    //     this._events = this._events || {};
+    //     if( event in this._events === false  )	return;
+    //     this._events[event].splice(this._events[event].indexOf(fct), 1);
+    // },
     trigger: function(event : string) {
         this._events = this._events || {};
         if( event in this._events === false  )	return;
@@ -70,20 +70,6 @@ AppDispatcher.register( function( payload : any ) {
     return true; // Needed for Flux promise resolution
 });
 
-//function which is subscribing on 'change'
-const componentDidMount = function() {  
-    ListStore.bind && ListStore.bind( 'change', listChanged );
-}
-const button = document.querySelector('.button');
-let ul = document.querySelector('.ul')
-
-const createNewItem = function() {
-    AppDispatcher.dispatch({
-        eventName: 'new-item',
-        newItem: { name: 'Marco' }
-    })   
-}
-
 //function which is called when list changed
 const listChanged = function() {
     ul = document.querySelector('.ul')
@@ -100,6 +86,21 @@ const listChanged = function() {
     const ulParent = ul && ul.parentNode
     ulParent && ulParent.appendChild(tmp_ul)
     ul && ulParent && ulParent.removeChild(ul);
+}
+
+//function which is subscribing on 'change'
+const componentDidMount = function() {  
+    ListStore.bind( 'change', listChanged );
+}
+
+const button = document.querySelector('.button');
+let ul = document.querySelector('.ul')
+
+const createNewItem = function() {
+    AppDispatcher.dispatch({
+        eventName: 'new-item',
+        newItem: { name: 'Marco' }
+    })   
 }
 
 componentDidMount()
